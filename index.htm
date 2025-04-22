@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta content='width=device-width' name='viewport'>
+    <title>Stepper/Sequencer Firmware Update</title>
+    <link rel="stylesheet" href="style.css">
+    <meta
+      name="description"
+      content="Easily allow users to install firmware from the web."
+    />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="color-scheme" content="dark light" />
+    <script type="module" src="https://unpkg.com/esp-web-tools@10.0.1/dist/web/install-button.js?module"></script>
+  </head>
+  <body>
+    <img alt="" src="logo.png">
+    <div class="main">
+    <h2>Welcome to the the firmware update site<br>for the Stepper/Sequencer, Remote Control, and DMX Repeater</h2>
+    
+    <div id="flasher">
+      <br>
+      <h1>Instructions</h1>
+      <ul style="list-style-type:none;">
+      <b>IMPORTANT: The HW revision and current firmware version are displayed on the screen at boot time. 
+          Installing the incorrect firmware may have unintended consequences.</b></li>
+      <br><br>
+      <li><h3>To update the device using <b>WiFi:</b></h3></li>
+        <ol>
+          <li>Start by selecting the version of the hardware you have from the options below.</li>
+          <li>Select the download link below to download the firmware file to your mobile phone/tablet.</li>
+          <li>Put the device in Firmware Update mode via the menu.</li>
+          <li>Connect to the WiFi network shown on the device screen. After connecting, the firmware update page 
+            should display automatically.<br>If it does not, try opening your browser and navigating to any website.</li>
+          <li>Select the previously downloaded file and click install.</li>
+          <li>Wait for the installation to finish. The device will automatically reboot.</li>
+          <li>Verify the verison shown on the device during bootup matches the version you attempted to install.</li>
+        </ol>
+        <br><br>
+      <li><h3>To update the device by plugging it <b>directly into your computer:</b></h3></li>
+      <div style="padding-left: 1.5em;">
+        <b>IMPORTANT: TURN OFF YOUR DEVICE before plugging it into the computer to update. </b>It must remain off for the duration of the update process.<br>
+        Be sure to use a USB-C cable capable of both data and power. If you attempt the below and 
+        don't see the device in step 4 below, try using a different cable.<br>
+      </div>
+      <ol>
+        <li>Prior to plugging in your device, select the hardware revision from the versions below.</li>
+        <li>Click the Connect button below. A list with available ports will appear. Doing this first makes it easier to 
+          identify which port your device is connected to if there are ports already listed.</li>
+        <li>Plug in your device to a USB port on your computer (you should connect one device at a time to make it easier to identify the correct port).
+          <br>Connect to the port that appears in the list.<br>If no new port appears, disconnect the device, hold down 
+          the knob on the stepper/sequencer or remote control, and reconnect.<br>Do not release the knob until the update process has begun.</li>
+        <li>Press Install and wait for the installation to finish.</li>
+        <li>DISCONNECT THE DEVICE FROM YOUR COMPUTER.</li>
+        <li>Turn on your device and verify the verison shown on the device during bootup matches the version you attempted to install.</li>
+      </ol>
+      </ul><br><br>
+
+    <div class="content">
+        <p></p>
+        <div style="display: flex; gap: 40px;">
+          <div data-type="unit32">
+            <p>32 Cue Stepper/Sequencer</p>
+            <ul class="radios">
+              <li>
+                <label><input type="radio" name="type" value="HWGen3" /> Gen3 (latest)</label>
+              </li>
+              <li>
+                <label><input type="radio" name="type" value="HWGen2" /> Gen2</label>
+              </li>
+              <li>
+                <label><input type="radio" name="type" value="HWGen1" /> Gen1</label>
+              </li>
+            </ul>
+          </div>
+          <div data-type="unit36">
+            <p>36 Cue Stepper/Sequencer   </p>
+            <ul class="radios">
+              <li>
+                <label><input type="radio" name="type" value="36CueRJ45Gen1" /> Gen1</label>
+              </li>
+            </ul>
+          </div>
+          <div data-type="remote">
+            <p>Remote Control</p>
+            <ul class="radios">
+              <li>
+                <label><input type="radio" name="type" value="rc_v1" /> Gen1</label>
+              </li>
+            </ul>
+          </div>
+          <div data-type="dmx">
+            <p>DMX Repeater</p>
+            <ul class="radios">
+              <li>
+                <label><input type="radio" name="type" value="dmx_v1" /> Gen1</label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <p class="button-row" align="center">
+        <esp-web-install-button class="invisible"></esp-web-install-button>
+        <a id="download-link" href="#" style="display: none; margin-top: 10px;" download>Download Firmware</a>
+        <span id="error-message" style="display: none; color: red; margin-top: 10px;">No Firmware File Found.</span>
+      </p>
+    </div>
+
+      <div class="footer">
+        <br>
+        Installer powered by <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>.
+        <br>
+    </div>
+    <script>
+        async function fetchManifest(manifestUrl) {
+            try {
+            const response = await fetch(manifestUrl);
+            if (!response.ok) throw new Error('Failed to load manifest');
+            const manifest = await response.json();
+            // Find the firmware part (assuming it's the one not in 'common/')
+            const firmwarePart = manifest.builds[0].parts.find(part => !part.path.startsWith('common/'));
+            const firmwarePath = firmwarePart ? firmwarePart.path : null; // Get path safely
+            const version = manifest.version || 'unknown'; // Assuming the version is in 'version' field
+            // return firmwarePath;
+            // Return null if firmwarePath couldn't be determined
+            return firmwarePath ? { firmwarePath, version } : null;
+            } catch (error) {
+            console.error('Error fetching manifest:', error);
+            return null;
+            }
+        }
+
+        document.querySelectorAll('input[name="type"]').forEach(radio => {
+              radio.addEventListener("change", async () => {
+                const button = document.querySelector('esp-web-install-button');
+                const downloadLink = document.getElementById('download-link');
+                const errorMessage = document.getElementById('error-message');
+
+                downloadLink.style.display = 'none';
+                errorMessage.style.display = 'none';
+
+                // Determine if the selected radio is from the "unit", "remote", or "dmx" section
+                const section = radio.closest('[data-type]').getAttribute('data-type');
+                
+                let manifestUrl;
+                if (section === "remote") {
+                  manifestUrl = `firmware/remotemanifest_${radio.value}.json`; // Remote pattern
+                } else if (section === "dmx") {
+                  manifestUrl = `firmware/dmxmanifest_${radio.value}.json`; // DMX pattern
+                } else {
+                  manifestUrl = `firmware/unitmanifest_${radio.value}.json`; // Default unit pattern
+                }
+
+                // Fetch the firmware file path from the manifest
+                const manifestData = await fetchManifest(manifestUrl);
+
+                if (manifestData) {
+                  // Destructure only if manifestData is not null
+                  const { firmwarePath, version } = manifestData; 
+                  button.manifest = manifestUrl;
+                  button.classList.remove('invisible');
+                  downloadLink.href = `firmware/${firmwarePath}`; // Use destructured path
+                  downloadLink.style.display = 'block';
+
+                  downloadLink.textContent = `Download Firmware ${version}`; // Use destructured version
+                  errorMessage.style.display = 'none';
+
+                } else {
+                  // manifestData is null (fetch failed or no valid part found)
+                  button.classList.add('invisible');
+                  downloadLink.style.display = 'none';
+                  errorMessage.style.display = 'block'; // Show the error message
+                }
+              });
+            });
+    </script>
+  </body>
+</html>

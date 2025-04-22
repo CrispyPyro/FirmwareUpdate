@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    background-color: #000;
+    margin: auto; /*0; */
+    color: #fff;
+    line-height: 1.5;
+}
+
+img {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    display: block;
+    margin: auto;
+    animation: fi 1s;
+    overflow: hidden;
+}
+
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 12px;
+}
+
+.content pre {
+    max-width: 100%;
+    overflow-y: scroll;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+esp-web-install-button[install-unsupported] {
+    visibility: inherit;
+}
+
+@keyframes fi {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.main {
+    animation: fi 1.5s .7s both;
+}
+
+a {
+    color: #fff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+ol {
+    margin: auto; /* Keep ol as inline-block for instructions */
+    text-align: left;
+    display: inline-block;
+}
+
+ul { /* Apply block centering for ul elements like .radios */
+    margin: 0 auto;
+    text-align: left;
+    display: block;
+}
+
+li::marker {
+    text-decoration: bold;
+    color: #fff;
+}
+
+li {
+    margin: 5px;
+}
+
+td {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+.radios li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    line-height: 2em;
+    text-align: left; /* Keep text left-aligned */
+}
+
+@media (prefers-color-scheme: dark) {
+    /* Restore correct media query structure */
+    ewt-install-dialog {
+        --mdc-theme-surface: #333;
+        --mdc-dialog-heading-ink-color: #fff;
+        --mdc-dialog-content-ink-color: #ddd;
+        --mdc-text-field-fill-color: #ddd;
+    }
+}
+
+/* Indent radio button lists slightly */
+ul.radios {
+    padding-left: 0px; 
+}
